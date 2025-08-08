@@ -1,4 +1,4 @@
-import { makeAutoObservable, runInAction } from 'mobx';
+import { makeAutoObservable } from 'mobx';
 import auth from '@react-native-firebase/auth';
 
 class AuthStore {
@@ -7,36 +7,24 @@ class AuthStore {
 
   constructor() {
     makeAutoObservable(this);
-    auth().onAuthStateChanged(user => {
-      runInAction(() => {
-        this.user = user;
-      });
-    });
+    auth().onAuthStateChanged(user => this.user = user);
   }
 
   async signUp(email: string, password: string) {
     try {
       await auth().createUserWithEmailAndPassword(email, password);
-      runInAction(() => {
         this.error = '';
-      });
     } catch (err: any) {
-      runInAction(() => {
-        this.error = err.message;
-      });
+        this.error = err.message
     }
   }
 
   async login(email: string, password: string) {
     try {
       await auth().signInWithEmailAndPassword(email, password);
-      runInAction(() => {
         this.error = '';
-      });
     } catch (err: any) {
-      runInAction(() => {
         this.error = err.message;
-      });
     }
   }
 
