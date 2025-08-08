@@ -3,18 +3,16 @@ import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
 import LoginScreen from './src/screens/login';
 import SignUpScreen from './src/screens/signUp';
 import DashBoard from './src/screens/dashBoard';
 import { authStore } from './src/store/authStore';
+import { RootStackParamList } from './src/config/types';
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const App = observer(() => {
-
-  // if (authStore.loading) {
-  //   return null; 
-  // }
 
   return (
     <NavigationContainer>

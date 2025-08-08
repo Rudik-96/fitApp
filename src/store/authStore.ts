@@ -1,44 +1,51 @@
-// src/store/authStore.ts
-import { makeAutoObservable } from 'mobx';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, User } from 'firebase/auth';
-import { auth } from '../config/firebase';
+import { makeAutoObservable, runInAction } from 'mobx';
+import auth from '@react-native-firebase/auth';
 
 class AuthStore {
-  user: User | null = null;
-  loading: boolean = false;
+  user: any = null;
   error: string = '';
 
   constructor() {
     makeAutoObservable(this);
-  }
-
-  async login(email: string, password: string) {
-    this.loading = true;
-    try {
-      const res = await signInWithEmailAndPassword(auth, email, password);
-      this.user = res.user;
-    } catch (e: any) {
-      this.error = e.message;
-    } finally {
-      this.loading = false;
-    }
+    auth().onAuthStateChanged(user => {
+      runInAction(() => {
+        this.user = user;
+      });
+    });
   }
 
   async signUp(email: string, password: string) {
-    this.loading = true;
     try {
-      const res = await createUserWithEmailAndPassword(auth, email, password);
-      this.user = res.user;
-    } catch (e: any) {
-      this.error = e.message;
-    } finally {
-      this.loading = false;
+      await auth().createUserWithEmailAndPassword(email, password);
+      runInAction(() => {
+        this.error = '';
+      });
+    } catch (err: any) {
+      runInAction(() => {
+        this.error = err.message;
+      });
+    }
+  }
+
+  async login(email: string, password: string) {
+    try {
+      await auth().signInWithEmailAndPassword(email, password);
+      runInAction(() => {
+        this.error = '';
+      });
+    } catch (err: any) {
+      runInAction(() => {
+        this.error = err.message;
+      });
     }
   }
 
   async logout() {
-    await signOut(auth);
-    this.user = null;
+    try {
+      await auth().signOut();
+    } catch (err: any) {
+      console.log('Logout error:', err.message);
+    }
   }
 }
 
