@@ -15,6 +15,7 @@ android {
     compileSdk rootProject.ext.compileSdkVersion
 
     namespace "com.fitapp"
+
     defaultConfig {
         applicationId "com.fitapp"
         minSdkVersion rootProject.ext.minSdkVersion
@@ -22,19 +23,23 @@ android {
         versionCode 1
         versionName "1.0"
     }
+
     signingConfigs {
         debug {
-            storeFile file('debug.keystore')
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
+            def home = System.getenv("HOME") ?: System.getenv("USERPROFILE")
+            storeFile file("${home}/.android/debug.keystore")
+            storePassword "android"
+            keyAlias "androiddebugkey"
+            keyPassword "android"
         }
     }
+
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
         }
         release {
+            
             signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
